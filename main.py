@@ -3,6 +3,7 @@
 import glob, os
 import sklearn as sk
 import numpy as np
+import pandas as pd
 from datetime import datetime
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.cross_validation import train_test_split
@@ -15,10 +16,12 @@ LABELS_PATH='data/partial/index'
 # Read messages
 print "Reading messages ..."
 start = datetime.now()
+
 messages = []
-for path in glob.glob(os.path.join(DATA_DIR, '*'))[:1000]:
+heldout_messages = {}
+for path in glob.iglob(os.path.join(DATA_DIR, '*')):
     m = Message.load(path)
-    messages.append(m)
+    heldout_messages[m.id] = m
 
 # Read the labels
 print "Reading labels ..."
@@ -29,6 +32,7 @@ with open(LABELS_PATH) as f:
         label, key = line.split()
         labels_dict[key.split('/')[-1]] = 1 if label.lower() == 'ham' else 0
 end = datetime.now()
+
 
 print "%i seconds reading and parsing ..." % (end - start).seconds
 
